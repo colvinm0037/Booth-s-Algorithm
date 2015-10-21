@@ -6,22 +6,37 @@ using System.Threading.Tasks;
 
 namespace BoothsAlgorithm
 {
-    class Program
+    class Algorithm
     {
+        /**
+         * Use Booth's Algortihm to multiply two signed 8 bit integers together.
+         * Shows every step of the process and gives final answer in binary and decimal.
+         *
+         */
         static void Main(string[] args)
         {
             while (true)
             {
-                // Read in input and format to binary strings of length 8
+                int mcand, multi;
+                                
+                // Get input from user and validate input
                 Console.WriteLine("Enter 1st number (Multiplicand): ");
-                int mcand = Convert.ToInt32(Console.ReadLine());
+                bool resultMcand = Int32.TryParse(Console.ReadLine(), out mcand);
 
                 Console.WriteLine("Enter 2nd number (Multiplier): ");
-                int multi = Convert.ToInt32(Console.ReadLine());
+                bool resultMulti = Int32.TryParse(Console.ReadLine(), out multi);
 
-                var multiplicand = Convert.ToString(mcand, 2);
-                var multiplier = Convert.ToString(multi, 2);
+                if (!resultMcand || !resultMulti || mcand > 127 || multi < -127 || mcand > 127 || mcand < -127)
+                {
+                    Console.WriteLine("\nPlease enter values within -127 and 127.\n");
+                    continue;
+                }
 
+                // Convert to binary strings
+                string multiplicand = Convert.ToString(mcand, 2);
+                string multiplier = Convert.ToString(multi, 2);
+
+                // Format binary strings to length 8
                 multiplicand = format(multiplicand, 8);
                 multiplier = format(multiplier, 8);
 
@@ -31,18 +46,18 @@ namespace BoothsAlgorithm
                 // Format product with leading 0's and extra 0 at end
                 var product = "00000000" + multiplier + "0";
 
-                // Initialize iteration
+                // Initialization iteration
                 Console.WriteLine("Iteration          Step          Multicand        Product");
                 Console.WriteLine("    0            Initialize       " + multiplicand + "       " + product);
 
-                var opCode = "";
-                String step = "";
+                string opCode = "";
+                string step = "";
 
-                // Remaining Iteration
+                // Remaining Iterations
                 for (int iteration = 1; iteration < 9; iteration++)
                 {
                     opCode = product.Substring(product.Length - 2);
-                    int upperProduct = Convert.ToInt32(product.Substring(0, 8), 2);
+                    int upperProduct = Convert.ToInt32(product.Substring(0, 8), 2); // The left half of the product
                     step = "No Op        ";
 
                     if (opCode.Equals("10"))
@@ -62,32 +77,37 @@ namespace BoothsAlgorithm
 
                     Console.WriteLine("    " + iteration + "            " + step + "    " + multiplicand + "       " + product);
 
-                    // Right Shift
-                    product = ASR_1(product);
+                    // Arithmatic Shift Right
+                    product = ASR(product, 1);
 
                     Console.WriteLine("    " + iteration + "            " + "ASR 1" + "            " + multiplicand + "       " + product);
                 }
 
-                Console.WriteLine("\nFinal Answer: " + product.Substring(0, 16));
+                // Print the answer in Binary
+                product = product.Substring(0, 16); // Remove the extra bit on the end
+                Console.WriteLine("\nFinal Answer: " + product);
 
-
+                // Print the answer in decimal
                 if (product.Substring(0, 1).Equals("0"))
                 {
-                    Console.WriteLine("Final Answer: " + Convert.ToInt32(product.Substring(0, 16), 2));
+                    // If 1st bit is zero then product is positive
+                    Console.WriteLine("Final Answer: " + Convert.ToInt32(product, 2));
                 }
-                else if (!product.Substring(0, 16).Contains("0"))
+                else if (!product.Contains("0"))
                 {
+                    // If product is only 1's then product is -1
                     Console.WriteLine("Final Answer: -1");
                 }
                 else
                 {
-                    String result = product.Substring(product.IndexOf("0"), 16 - product.IndexOf("0"));
-                    int value = Convert.ToInt32(result, 2) - (int)Math.Pow(2, result.Length);
+                    // Otherwise product is negative and value needs to be calculated by hand
+                    string positivePortion = product.Substring(product.IndexOf("0"), 16 - product.IndexOf("0"));
+                    int value = Convert.ToInt32(positivePortion, 2) - (int)Math.Pow(2, positivePortion.Length);
                     Console.WriteLine("Final Answer: " + value);
                 }
 
                 Console.WriteLine("Try again? [y/n]");
-                String input = Console.ReadLine();
+                string input = Console.ReadLine();
                 if (input.ToUpper().Equals("N"))
                 {
                     break;
@@ -96,12 +116,12 @@ namespace BoothsAlgorithm
         }
 
         // Formats a binary string to exactly 'length' characters by padding with 0's
-        static String format(String str, int length)
+        private static string format(String str, int desiredLength)
         {
-            String newString = str;
-            if (str.Length < length)
+            string newString = str;
+            if (str.Length < desiredLength)
             {
-                int padding = length - str.Length;
+                int padding = desiredLength - str.Length;
                 for (int i = 0; i < padding; i++)
                 {
                     newString = "0" + newString;
@@ -110,22 +130,25 @@ namespace BoothsAlgorithm
             }
             else
             {
-                return str.Substring(str.Length - length);
+                return str.Substring(str.Length - desiredLength);
             }
         }
 
-        static String ASR_1(String str)
+        // Performs an Arithmatic Shift Right on a binary string
+        private static string ASR(string str, int shiftAmount)
         {
-            String result = str.Substring(0, str.Length - 1);
-            if (result.Substring(0, 1).Equals("0"))
+            string result = str.Substring(0, str.Length - 1);
+            for (int i = 0; i < shiftAmount; i++)
             {
-                result = "0" + result;
+                if (result.Substring(0, 1).Equals("0"))
+                {
+                    result = "0" + result;
+                }
+                else
+                {
+                    result = "1" + result;
+                }
             }
-            else
-            {
-                result = "1" + result;
-            }
-
             return result;
         }
     }
