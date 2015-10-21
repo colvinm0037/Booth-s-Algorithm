@@ -117,16 +117,17 @@ namespace BoothsAlgorithm
 
         // Formats a binary string to exactly 'length' characters by padding with 0's
         private static string format(String str, int desiredLength)
-        {
-            string newString = str;
+        {            
+            StringBuilder builder = new StringBuilder(str);
+            
             if (str.Length < desiredLength)
             {
                 int padding = desiredLength - str.Length;
                 for (int i = 0; i < padding; i++)
                 {
-                    newString = "0" + newString;
+                    builder.Insert(0, "0");
                 }
-                return newString;
+                return builder.ToString();
             }
             else
             {
@@ -136,20 +137,20 @@ namespace BoothsAlgorithm
 
         // Performs an Arithmatic Shift Right on a binary string
         private static string ASR(string str, int shiftAmount)
-        {
-            string result = str.Substring(0, str.Length - 1);
+        {            
+            StringBuilder builder = new StringBuilder(str.Substring(0, str.Length - shiftAmount));
             for (int i = 0; i < shiftAmount; i++)
             {
-                if (result.Substring(0, 1).Equals("0"))
+                if (str.Substring(0, 1).Equals("0"))
                 {
-                    result = "0" + result;
+                    builder.Insert(0, "0");
                 }
                 else
                 {
-                    result = "1" + result;
+                    builder.Insert(0, "1");
                 }
             }
-            return result;
+            return builder.ToString();
         }
     }
 }
