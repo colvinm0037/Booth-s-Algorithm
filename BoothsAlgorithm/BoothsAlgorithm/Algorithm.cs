@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace BoothsAlgorithm
 {
-    class Algorithm
+    public class Algorithm
     {
         /**
          * Use Booth's Algortihm to multiply two signed 8 bit integers together.
          * Shows every step of the process and gives final answer in binary and decimal.
          *
+         * 10/21/2015
          */
         static void Main(string[] args)
         {
@@ -19,13 +20,14 @@ namespace BoothsAlgorithm
             {
                 int mcand, multi;
                                 
-                // Get input from user and validate input
+                // Get input from user
                 Console.WriteLine("Enter 1st number (Multiplicand): ");
                 bool resultMcand = Int32.TryParse(Console.ReadLine(), out mcand);
 
                 Console.WriteLine("Enter 2nd number (Multiplier): ");
                 bool resultMulti = Int32.TryParse(Console.ReadLine(), out multi);
 
+                // Validate input
                 if (!resultMcand || !resultMulti || mcand > 127 || multi < -127 || mcand > 127 || mcand < -127)
                 {
                     Console.WriteLine("\nPlease enter values within -127 and 127.\n");
@@ -75,11 +77,8 @@ namespace BoothsAlgorithm
                         step = "Prod += MCand";
                     }
 
-                    Console.WriteLine("    " + iteration + "            " + step + "    " + multiplicand + "       " + product);
-
-                    // Arithmatic Shift Right
-                    product = ASR(product, 1);
-
+                    Console.WriteLine("    " + iteration + "            " + step + "    " + multiplicand + "       " + product);                    
+                    product = ASR(product, 1); // Arithmatic Shift Right by 1
                     Console.WriteLine("    " + iteration + "            " + "ASR 1" + "            " + multiplicand + "       " + product);
                 }
 
